@@ -8,5 +8,15 @@ dotenv.config();
 // create express app
 const app = express();
 
-// connect to mongodb
-mongoose.connect(process.env.MONGODB_URI, {});
+// Connect to DB
+const MONGODB = process.env.MONGODB_URI;
+
+mongoose
+  .connect(MONGODB)
+  .then(() => {
+    const port = process.env.PORT;
+    app.listen(port, () =>
+      console.log(`Connected to MongoDB and listening on port ${port}...`)
+    );
+  })
+  .catch((err) => console.error(err));
