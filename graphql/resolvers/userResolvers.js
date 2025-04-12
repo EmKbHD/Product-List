@@ -43,7 +43,7 @@ export default {
         await user.save();
 
         // generate user token
-        const token = generateToken(user.id);
+        const token = generateToken(user._id);
         return { user, token };
       } catch (error) {
         throw new GraphQLError(error);
@@ -52,17 +52,21 @@ export default {
 
     logIn: async (_, { input }) => {
       const { email, password } = input;
-      const user = await User.findOne({ email });
-      if (!user) {
-        throw new GraphQLError("User not found");
+      try {
+        const user = await User.findOne({ email });
+        if (!user) {
+          throw new GraphQLError("User not found");
+        }
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+          throw new GraphQLError("Invalid credentials");
+        }
+        // generate user token
+        const token = generateToken(user._id);
+        return { user, token };
+      } catch (error) {
+        throw new GraphQLError(error.message);
       }
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
-        throw new GraphQLError("Invalid credentials");
-      }
-      // generate user token
-      const token = generateToken(user._id);
-      return { user, token };
     },
   },
 };

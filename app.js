@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { createYoga, createSchema } from "graphql-yoga";
 import { resolvers } from "./graphql/resolvers/index.js";
 import { typeDefs } from "./graphql/types/index.js";
+import { context } from "./utils/context.js";
 
 // loading environment variables
 dotenv.config();
@@ -17,6 +18,7 @@ const yoga = createYoga({
     typeDefs,
     resolvers,
   }),
+  context,
 });
 
 // yoga middleware
